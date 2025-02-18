@@ -1,0 +1,42 @@
+[
+    {
+        "controllerName": "User Controller",
+        "description": "Handles user-related operations such as registration, login, and profile management."
+    },
+    {
+        "controllerName": "Product Controller",
+        "description": "Manages operations related to product listings, including CRUD operations for products."
+    },
+    {
+        "controllerName": "Order Controller",
+        "description": "Handles order processing, order status updates, and order history retrieval."
+    },
+    {
+        "controllerName": "Payment Controller",
+        "description": "Manages payment processing and transactions, including refunds and payment status."
+    },
+    {
+        "controllerName": "Admin Controller",
+        "description": "Handles administrative tasks such as user management, permissions, and application settings."
+    },
+    {
+        "controllerName": "Reporting Controller",
+        "description": "Generates reports based on various data points such as sales statistics and user activity."
+    },
+    {
+        "controllerName": "Inventory Controller",
+        "description": "Manages stock levels, inventory updates, and supplier information."
+    },
+    {
+        "controllerName": "Category Controller",
+        "description": "Handles the management of product categories, including creation and modification."
+    },
+    {
+        "controllerName": "Notification Controller",
+        "description": "Manages sending notifications to users, including emails and in-app alerts."
+    },
+    {
+        "controllerName": "Feedback Controller",
+        "description": "Handles user feedback, including submission and retrieval of feedback details."
+    }
+]

@@ -1,38 +1,231 @@
-.App {
+
+html {
+  background-color: rgb(212, 212, 212);
+}
+
+.fixed-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 75%;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.cutover-container {
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between; 
+  height: 100%;
+  padding: 20px 0;
+}
+
+.step-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.step-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: var(--progress-left);
+  right: var(--progress-left);
+  height: 4px;
+  background-color: #e0e0e0;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.step-container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: var(--progress-left);
+  height: 4px;
+  background-color: #3f51b5;
+  z-index: 2;
+  border-radius: 2px;
+  width: var(--progress-width);
+}
+
+.step-wrapper {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  flex: 1;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0 auto;
+}
+
+.active-step .circle,
+.completed-step .circle {
+  background-color: #3f51b5;
+  font-weight: bold;
+  color: #fff;
+}
+
+.label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.active-step .label {
+  font-weight: bold;
+  color: #3f51b5;
+}
+
+.cutover-type-container {
+  margin: 20px auto;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.cutover-type-container label {
+  margin-right: 10px;
+  font-size: 15px;
+  color: #333;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.cutover-type-container select {
+  padding: 3px 10px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.names-section {
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.names-container {
+  display: flex;
+  gap: 10px;
+}
+
+.controller-container,
+.selected-container {
+  flex: 1;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.container-header {
+  background-color: #eaeaea;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.list-container {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.window-control {
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.window-control:hover {
+  background-color: #d0d0d0;
+  border-radius: 3px;
+}
+
+
+.button-container {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  margin-top: 10px; 
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.back-button {
+  padding: 7px 15px;
+  background-color: #f44336;
   color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
+.back-button:hover {
+  background-color: #e53935; 
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.back-button:disabled {
+  background-color: #ccc; 
+  cursor: not-allowed; 
+}
+
+.next-button {
+  padding: 7px 15px;
+  background-color: #3f51b5; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.next-button:hover {
+  background-color: #5c6bc0;
+}
+
+.next-button:disabled {
+  background-color: #ccc; 
+  cursor: not-allowed; 
 }
