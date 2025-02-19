@@ -1,0 +1,84 @@
+{
+    "controllers": [
+      {
+        "controllerName": "User Control Module",
+        "referenceNames": ["UC001", "UC002", "UC003"],
+        "IOChannels": {
+          "input": ["User Registration Form", "Login Credentials"],
+          "output": ["User Profile Data", "Error Messages"]
+        }
+      },
+      {
+        "controllerName": "Product Control Module",
+        "referenceNames": ["PC001", "PC002", "PC003"],
+        "IOChannels": {
+          "input": ["Product Details", "Category Selection"],
+          "output": ["Product List", "CRUD Operation Status"]
+        }
+      },
+      {
+        "controllerName": "Order Control Module",
+        "referenceNames": ["OC001", "OC002", "OC003"],
+        "IOChannels": {
+          "input": ["Order Request", "Order Update"],
+          "output": ["Order Confirmation", "Order History Data"]
+        }
+      },
+      {
+        "controllerName": "Payment Control Module",
+        "referenceNames": ["PM001", "PM002", "PM003"],
+        "IOChannels": {
+          "input": ["Payment Information", "Refund Request"],
+          "output": ["Payment Status", "Transaction History"]
+        }
+      },
+      {
+        "controllerName": "Admin Control Module",
+        "referenceNames": ["AM001", "AM002", "AM003"],
+        "IOChannels": {
+          "input": ["User Management Requests", "Application Settings"],
+          "output": ["User Permissions Data", "Configuration Status"]
+        }
+      },
+      {
+        "controllerName": "Reporting Control Module",
+        "referenceNames": ["RM001", "RM002", "RM003"],
+        "IOChannels": {
+          "input": ["Report Criteria", "Data Sources"],
+          "output": ["Generated Reports", "Analytics Insights"]
+        }
+      },
+      {
+        "controllerName": "Inventory Control Module",
+        "referenceNames": ["IM001", "IM002", "IM003"],
+        "IOChannels": {
+          "input": ["Stock Level Updates", "Supplier Information"],
+          "output": ["Inventory Status", "Stock Alerts"]
+        }
+      },
+      {
+        "controllerName": "Category Control Module",
+        "referenceNames": ["CM001", "CM002", "CM003"],
+        "IOChannels": {
+          "input": ["Category Name", "Modification Requests"],
+          "output": ["Category List", "Update Confirmation"]
+        }
+      },
+      {
+        "controllerName": "Notification Control Module",
+        "referenceNames": ["NM001", "NM002", "NM003"],
+        "IOChannels": {
+          "input": ["Notification Preferences", "Recipient Details"],
+          "output": ["Sent Notifications", "Delivery Status"]
+        }
+      },
+      {
+        "controllerName": "Feedback Control Module",
+        "referenceNames": ["FM001", "FM002", "FM003"],
+        "IOChannels": {
+          "input": ["Feedback Submission", "Retrieval Requests"],
+          "output": ["Feedback Acknowledgment", "Feedback History"]
+        }
+      }
+    ]
+  }

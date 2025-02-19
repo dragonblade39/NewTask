@@ -19,6 +19,7 @@ function CutoverSelection() {
 
   const [cutoverContent, setCutoverContent] = useState([]);
   const [cutoverSelected, setCutoverSelected] = useState([]);
+  const [referenceData, setReferenceData] = useState([]);
 
   const itemsPerPage = 50;
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,10 +75,31 @@ function CutoverSelection() {
     }
   }, [activeStep]);
 
-  // Automatically set the first selected name as selectedContainer when navigating to activeStep 1
+  useEffect(() => {
+    if (activeStep === 3) {
+      const fetchReferenceData = async () => {
+        try {
+          const response = await fetch("/ReferenceBlocks.json");
+          const data = await response.json();
+          
+          // Check if the data has the 'controllers' property containing the array
+          if (data.controllers && Array.isArray(data.controllers)) {
+            setReferenceData(data.controllers);
+          } else {
+            console.error("ReferenceType data does not contain an array of controllers:", data);
+            setReferenceData([]); // Setting an empty array if data is not valid
+          }
+        } catch (error) {
+          console.error("Error fetching ReferenceType data:", error);
+        }
+      };
+      fetchReferenceData();
+    }
+  }, [activeStep]);
+
   useEffect(() => {
     if (activeStep === 1 && selectedNames.length > 0) {
-      setSelectedContainer(selectedNames[0]); // Set the first selected name as the container
+      setSelectedContainer(selectedNames[0]);
     }
   }, [activeStep, selectedNames]);
 
@@ -88,24 +110,24 @@ function CutoverSelection() {
   const handleAddName = (name) => {
     if (!selectedNames.includes(name)) {
       setSelectedNames([...selectedNames, name]);
-      setNotification(""); // Clear notification
+      setNotification("");
     }
   };
 
   const handleRemoveName = (name) => {
     setSelectedNames(selectedNames.filter((item) => item !== name));
-    setNotification(""); // Clear notification
+    setNotification("");
   };
 
   const handleSelectedContainerChange = (e) => {
     setSelectedContainer(e.target.value);
     setPointType("");
-    setNotification(""); // Clear notification
+    setNotification("");
   };
 
   const handlePointTypeChange = (e) => {
     setPointType(e.target.value);
-    setNotification(""); // Clear notification
+    setNotification("");
   };
 
   const handleAddTpsItem = (item) => {
@@ -116,7 +138,7 @@ function CutoverSelection() {
           (i) => (i.controllerName || i) !== (item.controllerName || item)
         )
       );
-      setNotification(""); // Clear notification
+      setNotification("");
     }
   };
 
@@ -132,20 +154,20 @@ function CutoverSelection() {
           (i) => (i.controllerName || i) !== (item.controllerName || item)
         )
       );
-      setNotification(""); // Clear notification
+      setNotification("");
     }
   };
 
   const handleAddCutoverItem = (item) => {
     if (!cutoverSelected.includes(item)) {
       setCutoverSelected([...cutoverSelected, item]);
-      setNotification(""); // Clear notification
+      setNotification("");
     }
   };
 
   const handleRemoveCutoverItem = (item) => {
     setCutoverSelected(cutoverSelected.filter((i) => i !== item));
-    setNotification(""); // Clear notification
+    setNotification("");
   };
 
   const goToPreviousPage = () => {
@@ -161,24 +183,24 @@ function CutoverSelection() {
       setNotification("Please select at least one controller.");
       return;
     }
-    
+
     if (activeStep === 1) {
       if (selectedContainer === "") {
         setNotification("Please select a Controller.");
         return;
       }
-      
+
       if (pointType === "") {
         setNotification("Please select a point type.");
         return;
       }
-      
+
       if (tpsSelected.length === 0) {
         setNotification("Please select at least one TPS controller.");
         return;
       }
     }
-  
+
     if (activeStep === 2) {
       if (cutoverSelected.length === 0) {
         setNotification("Please select at least one cutover item.");
@@ -196,6 +218,21 @@ function CutoverSelection() {
     if (activeStep > 0) {
       setActiveStep((prev) => prev - 1);
     }
+  };
+
+  const getAssociatedData = () => {
+    if (!Array.isArray(referenceData)) {
+      console.error("Reference data is not an array:", referenceData);
+      return []; // Return an empty array if referenceData is not valid
+    }
+  
+    return cutoverSelected.map(selectedItem => {
+      const reference = referenceData.find(ref => ref.controllerName === selectedItem);
+      return {
+        referenceName: reference ? reference.referenceNames.join(", ") : "N/A",
+        IOChannels: reference ? `${JSON.stringify(reference.IOChannels.input)}, ${JSON.stringify(reference.IOChannels.output)}` : "N/A"
+      };
+    });
   };
 
   return (
@@ -221,62 +258,31 @@ function CutoverSelection() {
       </div>
 
       {activeStep === 0 && (
-      <>
-        <div className="cutover-type-container">
-          <strong htmlFor="cutoverType">Cutover Type:&nbsp;</strong>
-          <select
-            id="cutoverType"
-            value={cutoverType}
-            onChange={handleCutoverTypeChange}
-          >
-            <option value="single">Single Loop</option>
-            <option value="multiple">Multiple Loop</option>
-          </select>
-        </div>
-        <div className="names-section">
-          <div className="names-container">
-            <div className="controller-container">
-              <div className="container-header">
-                <span>Controller</span>
-              </div>
-              <div className="list-container">
-                {controllerTypes.map((item) => (
-                  <div key={item.id} className="list-item">
-                    <span>{item.controllerName}</span>
-                    <button
-                      className="window-control window-add"
-                      onClick={() => handleAddName(item.controllerName)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 12 12"
-                        width="20"
-                        height="20"
-                      >
-                        <path
-                          d="M6 1v10M1 6h10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="selected-container">
-              <div className="container-header">
-                <span>Selected</span>
-              </div>
-              <div className="list-container">
-                {selectedNames.length > 0 ? (
-                  selectedNames.map((name, index) => (
-                    <div key={index} className="list-item">
-                      <span>{name}</span>
+        <>
+          <div className="cutover-type-container">
+            <strong htmlFor="cutoverType">Cutover Type:&nbsp;</strong>
+            <select
+              id="cutoverType"
+              value={cutoverType}
+              onChange={handleCutoverTypeChange}
+            >
+              <option value="single">Single Loop</option>
+              <option value="multiple">Multiple Loop</option>
+            </select>
+          </div>
+          <div className="names-section">
+            <div className="names-container">
+              <div className="controller-container">
+                <div className="container-header">
+                  <span>Controller</span>
+                </div>
+                <div className="list-container">
+                  {controllerTypes.map((item) => (
+                    <div key={item.id} className="list-item">
+                      <span>{item.controllerName}</span>
                       <button
-                        className="window-control window-remove"
-                        onClick={() => handleRemoveName(name)}
+                        className="window-control window-add"
+                        onClick={() => handleAddName(item.controllerName)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -285,7 +291,7 @@ function CutoverSelection() {
                           height="20"
                         >
                           <path
-                            d="M2 2l8 8M10 2L2 10"
+                            d="M6 1v10M1 6h10"
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeLinecap="round"
@@ -293,18 +299,47 @@ function CutoverSelection() {
                         </svg>
                       </button>
                     </div>
-                  ))
-                ) : (
-                  <p>No names selected</p>
-                )}
+                  ))}
+                </div>
+              </div>
+              <div className="selected-container">
+                <div className="container-header">
+                  <span>Selected Controller</span>
+                </div>
+                <div className="list-container">
+                  {selectedNames.length > 0 ? (
+                    selectedNames.map((name, index) => (
+                      <div key={index} className="list-item">
+                        <span>{name}</span>
+                        <button
+                          className="window-control window-remove"
+                          onClick={() => handleRemoveName(name)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 12 12"
+                            width="20"
+                            height="20"
+                          >
+                            <path
+                              d="M2 2l8 8M10 2L2 10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No names selected</p>
+                  )}
+                </div>
               </div>
             </div>
+            {notification && <div className="notification">{notification}</div>}
           </div>
-          {notification && (
-            <div className="notification">{notification}</div>
-          )}
-        </div>
-      </>
+        </>
       )}
 
       {activeStep === 1 && (
@@ -444,23 +479,28 @@ function CutoverSelection() {
                 <option value={selectedContainer}>{selectedContainer}</option>
               </select>
             </div>
-            <div className="point-type-dropdown">
-              <strong>Loops:&nbsp;</strong>
-              <select
-                value={pointType}
-                onChange={(e) => setPointType(e.target.value)}
-              >
-                <option value="">Select Loop</option>
-                {tpsSelected.length > 0 ? (
-                  tpsSelected.map((item, index) => (
-                    <option key={index} value={item.controllerName || item}>
-                      {item.controllerName || item}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">No loops selected</option>
-                )}
-              </select>
+
+            <div className="loops-table-container">
+              {tpsSelected.length > 0 ? (
+                <table className="loops-table">
+                  <thead>
+                    <tr>
+                      <th>Selected Loops</th>
+                     
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tpsSelected.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.controllerName || item}</td>
+                        
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>No loops selected</p>
+              )}
             </div>
           </div>
           {notification && <div className="notification">{notification}</div>}
@@ -468,7 +508,7 @@ function CutoverSelection() {
             <div className="point-containers">
               <div className="controller-container">
                 <div className="container-header">
-                  <span>Control Modules</span>
+                  <span>Control Module</span>
                 </div>
                 <div className="list-container">
                   {cutoverContent.length > 0 ? (
@@ -493,7 +533,7 @@ function CutoverSelection() {
                               strokeWidth="2"
                               strokeLinecap="round"
                             />
-                        </svg>
+                          </svg>
                         </button>
                       </div>
                     ))
@@ -504,7 +544,7 @@ function CutoverSelection() {
               </div>
               <div className="selected-container">
                 <div className="container-header">
-                  <span>Selected Control Modules</span>
+                  <span>Selected Control Module</span>
                 </div>
                 <div className="list-container">
                   {cutoverSelected.length > 0 ? (
@@ -541,11 +581,38 @@ function CutoverSelection() {
         </div>
       )}
 
-      {activeStep === 3 && (
-        <div className="report-container">
-          <h2>Report</h2>
-        </div>
-      )}
+{activeStep === 3 && (
+  <div className="report-container">
+    <h2>Associate Channels To Reference Blocks for the selected Control Modules</h2>
+    {cutoverSelected.length > 0 ? (
+      <table className="report-table">
+        <thead>
+          <tr>
+            <th>Reference Name</th>
+            <th>IO Channel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {getAssociatedData().flatMap((item, index) => {
+            const referenceNames = item.referenceName.split(", ");
+            const ioChannels = item.IOChannels.split(", ");
+
+            // Ensure both arrays are the same length
+            const maxLength = Math.max(referenceNames.length, ioChannels.length);
+            return Array.from({ length: maxLength }).map((_, i) => (
+              <tr key={`${index}-${i}`}>
+                <td>{referenceNames[i] || ""}</td>
+                <td>{ioChannels[i] || ""}</td>
+              </tr>
+            ));
+          })}
+        </tbody>
+      </table>
+    ) : (
+      <p>No control modules selected</p>
+    )}
+  </div>
+)}
 
       <div className="button-container">
         <button

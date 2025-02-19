@@ -2,11 +2,13 @@ html {
   background-color: rgb(212, 212, 212);
   box-sizing: border-box;
 }
+
 *,
 *::before,
 *::after {
   box-sizing: inherit;
 }
+
 .fixed-center {
   position: fixed;
   top: 50%;
@@ -22,6 +24,7 @@ html {
   overflow: hidden;
   z-index: 1000;
 }
+
 .cutover-container {
   display: flex;
   flex-direction: column;
@@ -29,6 +32,7 @@ html {
   padding: 10px 0;
   min-height: 0;
 }
+
 .step-container {
   position: relative;
   display: flex;
@@ -36,6 +40,7 @@ html {
   align-items: center;
   margin: 0 20px;
 }
+
 .step-container::before {
   content: "";
   position: absolute;
@@ -47,6 +52,7 @@ html {
   z-index: 1;
   border-radius: 2px;
 }
+
 .step-container::after {
   content: "";
   position: absolute;
@@ -58,12 +64,14 @@ html {
   border-radius: 2px;
   width: var(--progress-width);
 }
+
 .step-wrapper {
   position: relative;
   z-index: 3;
   text-align: center;
   flex: 1;
 }
+
 .circle {
   width: 30px;
   height: 30px;
@@ -76,20 +84,24 @@ html {
   transition: background-color 0.3s, color 0.3s;
   margin: 0 auto;
 }
+
 .active-step .circle,
 .completed-step .circle {
   background-color: #3f51b5;
   color: #fff;
 }
+
 .label {
   margin-top: 8px;
   font-size: 12px;
   color: #666;
 }
+
 .active-step .label {
   font-weight: bold;
   color: #3f51b5;
 }
+
 .cutover-type-container {
   position: sticky;
   top: 0;
@@ -100,11 +112,13 @@ html {
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
+
 .cutover-type-container strong {
   margin-right: 10px;
   font-size: 12px;
   color: #333;
 }
+
 .cutover-type-container select {
   padding: 6px 25px;
   font-size: 10px;
@@ -119,6 +133,7 @@ html {
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
+
 .names-section {
   flex: 1;
   margin: 10px 20px 20px 20px;
@@ -127,12 +142,14 @@ html {
   display: flex;
   flex-direction: column;
 }
+
 .names-container {
   display: flex;
   flex: 1;
   gap: 10px;
   min-height: 0;
 }
+
 .controller-container,
 .selected-container {
   flex: 1;
@@ -142,8 +159,8 @@ html {
   border: 1px solid #ddd;
   border-radius: 4px;
   min-height: 0;
-  overflow: hidden;
 }
+
 .container-header {
   background-color: #eaeaea;
   padding: 5px 10px;
@@ -154,15 +171,18 @@ html {
   color: #333;
   font-weight: bold;
 }
+
 .list-container {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
   margin-bottom: 10px;
 }
-.list-container p{
+
+.list-container p {
   font-size: 12px;
 }
+
 .list-item {
   display: flex;
   justify-content: space-between;
@@ -171,9 +191,11 @@ html {
   border-bottom: 1px solid #ddd;
   font-size: 12px;
 }
+
 .list-item:last-child {
   border-bottom: none;
 }
+
 .window-control {
   width: 24px;
   height: 24px;
@@ -184,18 +206,21 @@ html {
   align-items: center;
   justify-content: center;
 }
+
 .window-control:hover {
   background-color: #d0d0d0;
   border-radius: 3px;
 }
+
 .button-container {
   margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding:0px 10px 0px 10px;
+  padding: 0px 10px 0px 10px;
   margin-bottom: 0px;
 }
+
 .back-button {
   padding: 7px 15px;
   background-color: #f44336;
@@ -206,13 +231,16 @@ html {
   font-size: 14px;
   transition: background-color 0.3s;
 }
+
 .back-button:hover {
   background-color: #e53935;
 }
+
 .back-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
 .next-button {
   padding: 7px 15px;
   background-color: #3f51b5;
@@ -223,13 +251,16 @@ html {
   font-size: 14px;
   transition: background-color 0.3s;
 }
+
 .next-button:hover {
   background-color: #5c6bc0;
 }
+
 .next-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
 .tps-container {
   flex: 1;
   margin: 10px 20px 20px 20px;
@@ -238,18 +269,21 @@ html {
   display: flex;
   flex-direction: column;
 }
+
 .selected-container-dropdown,
 .point-type-dropdown {
-  padding: 5px 10px 0px 10px;
   text-align: center;
   margin-bottom: 10px;
   background-color: transparent;
   border: none;
 }
+
 .selected-container-dropdown,
-.point-type-dropdown strong{
+.point-type-dropdown strong {
   font-size: 12px;
+  padding-top: 4px;
 }
+
 .display-dropdowns {
   display: flex;
   gap: 20px;
@@ -257,13 +291,16 @@ html {
   width: 100%;
   border-bottom: 1px solid #ddd;
 }
-.display-dropdowns select{
-  padding:2px 0 2px 0;
-  font-size: 12px;
+
+.display-dropdowns select {
+  padding: 2px 5px;
+  font-size: 10px;
 }
-.display-dropdowns > div {
+
+.display-dropdowns>div {
   min-width: 200px;
 }
+
 .cutover-display-container {
   flex: 1;
   display: flex;
@@ -273,6 +310,7 @@ html {
   overflow-y: auto;
   width: 100%;
 }
+
 .point-containers {
   display: flex;
   flex: 1;
@@ -282,6 +320,7 @@ html {
   box-sizing: border-box;
   width: 100%;
 }
+
 .pagination-controls {
   display: flex;
   justify-content: space-between;
@@ -289,6 +328,7 @@ html {
   padding: 5px;
   margin-top: 10px;
 }
+
 .pagination-controls button {
   padding: 4px 8px;
   background-color: #3f51b5;
@@ -297,14 +337,17 @@ html {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .pagination-controls button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
 .pagination-controls span {
   font-size: 14px;
   color: #333;
 }
+
 .notification {
   margin: 10px 20px;
   padding: 10px;
@@ -319,5 +362,88 @@ html {
   text-align: center;
   font-size: 16px;
   width: 100%;
-  margin:5px 0 0 0;
+  margin: 5px 0 0 0;
 }
+
+
+.loops-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+}
+
+.loops-table-container {
+  padding-left:2px;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.loops-table th,
+.loops-table td {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.loops-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.loops-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+
+/* Report Section Styling */
+.report-container {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.report-container h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Professional Table Styling */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.report-table thead {
+  background: #3f51b5;
+  color: white;
+  text-align: left;
+}
+
+.report-table th, 
+.report-table td {
+  padding: 10px;
+  border-bottom: 1px solid grey;
+  font-size: 14px;
+}
+
+.report-table th {
+  font-weight: 600;
+}
+
+.report-table tbody tr:hover {
+  background: #f1f1f1;
+}
+
+.report-container p {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  margin-top: 15px;
+}
+
