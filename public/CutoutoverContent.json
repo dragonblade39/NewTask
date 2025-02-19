@@ -1,0 +1,82 @@
+[
+  {
+    "controllerName": "User Control Module",
+    "description": "Handles user-related operations such as registration, login, and profile management."
+  },
+  {
+    "controllerName": "Product Control Module",
+    "description": "Manages operations related to product listings, including CRUD operations for products."
+  },
+  {
+    "controllerName": "Order Control Module",
+    "description": "Handles order processing, order status updates, and order history retrieval."
+  },
+  {
+    "controllerName": "Payment Control Module",
+    "description": "Manages payment processing and transactions, including refunds and payment status."
+  },
+  {
+    "controllerName": "Admin Control Module",
+    "description": "Handles administrative tasks such as user management, permissions, and application settings."
+  },
+  {
+    "controllerName": "Reporting Control Module",
+    "description": "Generates reports based on various data points such as sales statistics and user activity."
+  },
+  {
+    "controllerName": "Inventory Control Module",
+    "description": "Manages stock levels, inventory updates, and supplier information."
+  },
+  {
+    "controllerName": "Category Control Module",
+    "description": "Handles the management of product categories, including creation and modification."
+  },
+  {
+    "controllerName": "Notification Control Module",
+    "description": "Manages sending notifications to users, including emails and in-app alerts."
+  },
+  {
+    "controllerName": "Feedback Control Module",
+    "description": "Handles user feedback, including submission and retrieval of feedback details."
+  },
+  {
+    "controllerName": "User Control Module",
+    "description": "Handles user-related operations such as registration, login, and profile management."
+  },
+  {
+    "controllerName": "Product Control Module",
+    "description": "Manages operations related to product listings, including CRUD operations for products."
+  },
+  {
+    "controllerName": "Order Control Module",
+    "description": "Handles order processing, order status updates, and order history retrieval."
+  },
+  {
+    "controllerName": "Payment Control Module",
+    "description": "Manages payment processing and transactions, including refunds and payment status."
+  },
+  {
+    "controllerName": "Admin Control Module",
+    "description": "Handles administrative tasks such as user management, permissions, and application settings."
+  },
+  {
+    "controllerName": "Reporting Control Module",
+    "description": "Generates reports based on various data points such as sales statistics and user activity."
+  },
+  {
+    "controllerName": "Inventory Control Module",
+    "description": "Manages stock levels, inventory updates, and supplier information."
+  },
+  {
+    "controllerName": "Category Control Module",
+    "description": "Handles the management of product categories, including creation and modification."
+  },
+  {
+    "controllerName": "Notification Control Module",
+    "description": "Manages sending notifications to users, including emails and in-app alerts."
+  },
+  {
+    "controllerName": "Feedback Control Module",
+    "description": "Handles user feedback, including submission and retrieval of feedback details."
+  }
+]
