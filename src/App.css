@@ -136,9 +136,9 @@ html {
 
 .names-section {
   flex: 1;
-  margin: 10px 20px 20px 20px;
+  margin: 10px 20px 30px 20px;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 }
@@ -148,6 +148,7 @@ html {
   flex: 1;
   gap: 10px;
   min-height: 0;
+  margin-bottom: 20px;
 }
 
 .controller-container,
@@ -159,6 +160,7 @@ html {
   border: 1px solid #ddd;
   border-radius: 4px;
   min-height: 0;
+  margin-bottom: 10px;
 }
 
 .container-header {
@@ -177,6 +179,23 @@ html {
   padding: 10px;
   overflow-y: auto;
   margin-bottom: 10px;
+  font-size: 12px;
+
+}
+
+.controller-table td {
+  padding: 0 10px 0 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.controller-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.controllerTypeTR {
+  border-bottom: 1px solid grey;
 }
 
 .list-container p {
@@ -213,12 +232,16 @@ html {
 }
 
 .button-container {
-  margin-top: auto;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 10px 0px 10px;
-  margin-bottom: 0px;
+  padding: 10px;
+  background-color: white;
 }
 
 .back-button {
@@ -293,7 +316,7 @@ html {
 }
 
 .display-dropdowns select {
-  padding: 2px 5px;
+  padding: 4px 5px;
   font-size: 10px;
 }
 
@@ -319,6 +342,7 @@ html {
   padding: 10px 10px 0 10px;
   box-sizing: border-box;
   width: 100%;
+  margin-bottom: 20px;
 }
 
 .pagination-controls {
@@ -370,10 +394,10 @@ html {
   width: 100%;
   border-collapse: collapse;
   margin-top: 5px;
+
 }
 
 .loops-table-container {
-  padding-left:2px;
   font-size: 12px;
   margin-bottom: 5px;
 }
@@ -382,6 +406,8 @@ html {
 .loops-table td {
   border: 1px solid #ddd;
   text-align: left;
+  padding-left: 10px;
+
 }
 
 .loops-table th {
@@ -397,17 +423,18 @@ html {
 
 /* Report Section Styling */
 .report-container {
-  margin-top: 20px;
-  padding: 20px;
   border-radius: 8px;
+  padding: 0px 100px 20px 100px;
+  font-size: 14px;
+  margin-bottom: 30px;
+  overflow-y: auto;
 }
 
 .report-container h2 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
   margin-bottom: 15px;
-  text-align: center;
 }
 
 /* Professional Table Styling */
@@ -416,18 +443,25 @@ html {
   border-collapse: collapse;
   background: white;
   border-radius: 6px;
-  overflow: hidden;
+  font-size: 14px;
+
+
 }
 
 .report-table thead {
-  background: #3f51b5;
-  color: white;
+  background: #ddd;
+  color: black;
   text-align: left;
+
 }
 
-.report-table th, 
+.report-table table {
+  border: 1px solid #ccc;
+}
+
+.report-table th,
 .report-table td {
-  padding: 10px;
+  padding: 5px;
   border-bottom: 1px solid grey;
   font-size: 14px;
 }
@@ -447,3 +481,52 @@ html {
   margin-top: 15px;
 }
 
+
+.loopdetection-container {
+  border-radius: 8px;
+  padding: 0 20px 50px 20px;
+  font-size: 14px;
+  overflow: auto;
+}
+
+.loopdetection-container h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.loopsdetection-table {
+  width: 75%;
+  border-collapse: collapse;
+  margin-top: 5px;
+
+}
+
+.loopsdetection-table-container {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.loopsdetection-table th,
+.loopsdetection-table td {
+  border: 1px solid #ddd;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.loopsdetection-table thead {
+  background-color: #ccc;
+}
+
+.loopsdetection-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+
+.loopdetection-container h2 {
+  text-align: left;
+}

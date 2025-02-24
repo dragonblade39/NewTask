@@ -1,84 +1,55 @@
 {
     "controllers": [
       {
-        "controllerName": "User Control Module",
+        "controllerName": "CTRL_DEVIDX1",
         "referenceNames": ["UC001", "UC002", "UC003"],
-        "IOChannels": {
-          "input": ["User Registration Form", "Login Credentials"],
-          "output": ["User Profile Data", "Error Messages"]
-        }
+        "IOChannels":["UCIO2743484", "UCIO12328909", "UCIO120182984"]
+        
       },
       {
-        "controllerName": "Product Control Module",
+        "controllerName": "CTRL_DEVIDX2",
         "referenceNames": ["PC001", "PC002", "PC003"],
-        "IOChannels": {
-          "input": ["Product Details", "Category Selection"],
-          "output": ["Product List", "CRUD Operation Status"]
-        }
+        "IOChannels":["PCIO2743484", "PCIO12328909", "PCIO120182984"]
       },
       {
-        "controllerName": "Order Control Module",
+        "controllerName": "CTRL_DEVIDX3",
         "referenceNames": ["OC001", "OC002", "OC003"],
-        "IOChannels": {
-          "input": ["Order Request", "Order Update"],
-          "output": ["Order Confirmation", "Order History Data"]
-        }
+       "IOChannels":["OCIO2743484", "OCIO12328909", "OCIO120182984"]
       },
       {
-        "controllerName": "Payment Control Module",
+        "controllerName": "CTRL_DEVIDX4",
         "referenceNames": ["PM001", "PM002", "PM003"],
-        "IOChannels": {
-          "input": ["Payment Information", "Refund Request"],
-          "output": ["Payment Status", "Transaction History"]
-        }
+        "IOChannels":["PCMIO2743484", "PCMIO12328909", "PCMIO120182984"]
       },
       {
-        "controllerName": "Admin Control Module",
+        "controllerName": "CTRL_DEVIDX5",
         "referenceNames": ["AM001", "AM002", "AM003"],
-        "IOChannels": {
-          "input": ["User Management Requests", "Application Settings"],
-          "output": ["User Permissions Data", "Configuration Status"]
-        }
+        "IOChannels":["ACMIO2743484", "ACMIO12328909", "ACMIO120182984"]
       },
       {
-        "controllerName": "Reporting Control Module",
+        "controllerName": "CTRL_DEVIDX6",
         "referenceNames": ["RM001", "RM002", "RM003"],
-        "IOChannels": {
-          "input": ["Report Criteria", "Data Sources"],
-          "output": ["Generated Reports", "Analytics Insights"]
-        }
+       "IOChannels":["RCMIO2743484", "RCMIO12328909", "RCMIO120182984"]
       },
       {
-        "controllerName": "Inventory Control Module",
+        "controllerName": "CTRL_DEVIDX7",
         "referenceNames": ["IM001", "IM002", "IM003"],
-        "IOChannels": {
-          "input": ["Stock Level Updates", "Supplier Information"],
-          "output": ["Inventory Status", "Stock Alerts"]
-        }
+       "IOChannels":["ICMIO2743484", "ICMIO12328909", "ICMIO120182984"]
       },
       {
-        "controllerName": "Category Control Module",
+        "controllerName": "CTRL_DEVIDX8",
         "referenceNames": ["CM001", "CM002", "CM003"],
-        "IOChannels": {
-          "input": ["Category Name", "Modification Requests"],
-          "output": ["Category List", "Update Confirmation"]
-        }
+        "IOChannels":["CCMIO2743484", "CCMIO12328909", "CCMIO120182984"]
       },
       {
-        "controllerName": "Notification Control Module",
+        "controllerName": "CTRL_DEVIDX9",
         "referenceNames": ["NM001", "NM002", "NM003"],
-        "IOChannels": {
-          "input": ["Notification Preferences", "Recipient Details"],
-          "output": ["Sent Notifications", "Delivery Status"]
-        }
+        "IOChannels":["NMIO2743484", "NMIO12328909", "NMIO120182984"]
       },
       {
-        "controllerName": "Feedback Control Module",
+        "controllerName": "CTRL_DEVIDX10",
         "referenceNames": ["FM001", "FM002", "FM003"],
-        "IOChannels": {
-          "input": ["Feedback Submission", "Retrieval Requests"],
-          "output": ["Feedback Acknowledgment", "Feedback History"]
-        }
+       "IOChannels":["FMIO2743484", "FMIO12328909", "FMIO120182984"]
       }
     ]
   }

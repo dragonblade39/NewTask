@@ -1,82 +1,82 @@
 [
   {
-    "controllerName": "User Control Module",
+    "controllerName": "CTRL_DEVIDX7",
     "description": "Handles user-related operations such as registration, login, and profile management."
   },
   {
-    "controllerName": "Product Control Module",
+    "controllerName": "CTRL_DEVIDX2",
     "description": "Manages operations related to product listings, including CRUD operations for products."
   },
   {
-    "controllerName": "Order Control Module",
+    "controllerName": "CTRL_DEVIDX3",
     "description": "Handles order processing, order status updates, and order history retrieval."
   },
   {
-    "controllerName": "Payment Control Module",
+    "controllerName": "CTRL_DEVIDX4",
     "description": "Manages payment processing and transactions, including refunds and payment status."
   },
   {
-    "controllerName": "Admin Control Module",
+    "controllerName": "CTRL_DEVIDX5",
     "description": "Handles administrative tasks such as user management, permissions, and application settings."
   },
   {
-    "controllerName": "Reporting Control Module",
+    "controllerName": "CTRL_DEVIDX6",
     "description": "Generates reports based on various data points such as sales statistics and user activity."
   },
   {
-    "controllerName": "Inventory Control Module",
+    "controllerName": "CTRL_DEVIDX7",
     "description": "Manages stock levels, inventory updates, and supplier information."
   },
   {
-    "controllerName": "Category Control Module",
+    "controllerName": "CTRL_DEVIDX8",
     "description": "Handles the management of product categories, including creation and modification."
   },
   {
-    "controllerName": "Notification Control Module",
+    "controllerName": "CTRL_DEVIDX9",
     "description": "Manages sending notifications to users, including emails and in-app alerts."
   },
   {
-    "controllerName": "Feedback Control Module",
+    "controllerName": "CTRL_DEVIDX10",
     "description": "Handles user feedback, including submission and retrieval of feedback details."
   },
   {
-    "controllerName": "User Control Module",
+    "controllerName": "CTRL_DEVIDX7",
     "description": "Handles user-related operations such as registration, login, and profile management."
   },
   {
-    "controllerName": "Product Control Module",
+    "controllerName": "CTRL_DEVIDX2",
     "description": "Manages operations related to product listings, including CRUD operations for products."
   },
   {
-    "controllerName": "Order Control Module",
+    "controllerName": "CTRL_DEVIDX3",
     "description": "Handles order processing, order status updates, and order history retrieval."
   },
   {
-    "controllerName": "Payment Control Module",
+    "controllerName": "CTRL_DEVIDX4",
     "description": "Manages payment processing and transactions, including refunds and payment status."
   },
   {
-    "controllerName": "Admin Control Module",
+    "controllerName": "CTRL_DEVIDX5",
     "description": "Handles administrative tasks such as user management, permissions, and application settings."
   },
   {
-    "controllerName": "Reporting Control Module",
+    "controllerName": "CTRL_DEVIDX6",
     "description": "Generates reports based on various data points such as sales statistics and user activity."
   },
   {
-    "controllerName": "Inventory Control Module",
+    "controllerName": "CTRL_DEVIDX7",
     "description": "Manages stock levels, inventory updates, and supplier information."
   },
   {
-    "controllerName": "Category Control Module",
+    "controllerName": "CTRL_DEVIDX8",
     "description": "Handles the management of product categories, including creation and modification."
   },
   {
-    "controllerName": "Notification Control Module",
+    "controllerName": "CTRL_DEVIDX9",
     "description": "Manages sending notifications to users, including emails and in-app alerts."
   },
   {
-    "controllerName": "Feedback Control Module",
+    "controllerName": "CTRL_DEVIDX10",
     "description": "Handles user feedback, including submission and retrieval of feedback details."
   }
 ]

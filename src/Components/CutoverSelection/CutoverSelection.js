@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import "../../App.css";
 
 function CutoverSelection() {
-  const steps = ["Select", "TPS", "Cutover", "Report"];
+  const steps = [
+    "Select",
+    "TPS",
+    "Cutover",
+    "Report",
+    "Loop Detection",
+    "Inact. and Del.",
+    "Load and Act.",
+    "Loop Transfer",
+  ];
   const [activeStep, setActiveStep] = useState(0);
   const progressWidth = activeStep * (100 / steps.length) + "%";
   const progressLeft = 100 / (steps.length * 2) + "%";
@@ -81,12 +90,15 @@ function CutoverSelection() {
         try {
           const response = await fetch("/ReferenceBlocks.json");
           const data = await response.json();
-          
+
           // Check if the data has the 'controllers' property containing the array
           if (data.controllers && Array.isArray(data.controllers)) {
             setReferenceData(data.controllers);
           } else {
-            console.error("ReferenceType data does not contain an array of controllers:", data);
+            console.error(
+              "ReferenceType data does not contain an array of controllers:",
+              data
+            );
             setReferenceData([]); // Setting an empty array if data is not valid
           }
         } catch (error) {
@@ -223,14 +235,16 @@ function CutoverSelection() {
   const getAssociatedData = () => {
     if (!Array.isArray(referenceData)) {
       console.error("Reference data is not an array:", referenceData);
-      return []; // Return an empty array if referenceData is not valid
+      return [];
     }
-  
-    return cutoverSelected.map(selectedItem => {
-      const reference = referenceData.find(ref => ref.controllerName === selectedItem);
+
+    return cutoverSelected.map((selectedItem) => {
+      const reference = referenceData.find(
+        (ref) => ref.controllerName === selectedItem
+      );
       return {
         referenceName: reference ? reference.referenceNames.join(", ") : "N/A",
-        IOChannels: reference ? `${JSON.stringify(reference.IOChannels.input)}, ${JSON.stringify(reference.IOChannels.output)}` : "N/A"
+        IOChannels: reference ? reference.IOChannels.join(", ") : "N/A",
       };
     });
   };
@@ -277,29 +291,40 @@ function CutoverSelection() {
                   <span>Controller</span>
                 </div>
                 <div className="list-container">
-                  {controllerTypes.map((item) => (
-                    <div key={item.id} className="list-item">
-                      <span>{item.controllerName}</span>
-                      <button
-                        className="window-control window-add"
-                        onClick={() => handleAddName(item.controllerName)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 12 12"
-                          width="20"
-                          height="20"
-                        >
-                          <path
-                            d="M6 1v10M1 6h10"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
+                  <table className="controller-table">
+                    <tbody>
+                      {controllerTypes.map((item) => (
+                        <tr key={item.id}>
+                          <td>
+                            <span>{item.controllerName}</span>
+                          </td>
+                          <td>
+                            <span>{item.status}</span>
+                          </td>
+                          <td>
+                            <button
+                              className="window-control window-add"
+                              onClick={() => handleAddName(item.controllerName)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 12 12"
+                                width="20"
+                                height="20"
+                              >
+                                <path
+                                  d="M6 1v10M1 6h10"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
               <div className="selected-container">
@@ -486,14 +511,12 @@ function CutoverSelection() {
                   <thead>
                     <tr>
                       <th>Selected Loops</th>
-                     
                     </tr>
                   </thead>
                   <tbody>
                     {tpsSelected.map((item, index) => (
                       <tr key={index}>
                         <td>{item.controllerName || item}</td>
-                        
                       </tr>
                     ))}
                   </tbody>
@@ -581,39 +604,311 @@ function CutoverSelection() {
         </div>
       )}
 
-{activeStep === 3 && (
-  <div className="report-container">
-    <h2>Associate Channels To Reference Blocks for the selected Control Modules</h2>
-    {cutoverSelected.length > 0 ? (
-      <table className="report-table">
-        <thead>
-          <tr>
-            <th>Reference Name</th>
-            <th>IO Channel</th>
-          </tr>
-        </thead>
-        <tbody>
-          {getAssociatedData().flatMap((item, index) => {
-            const referenceNames = item.referenceName.split(", ");
-            const ioChannels = item.IOChannels.split(", ");
+      {activeStep === 3 && (
+        <div className="report-container">
+          <h2>
+            Associate Channels To Reference Blocks for the selected Control
+            Modules
+          </h2>
+          {cutoverSelected.length > 0 ? (
+            <table className="report-table">
+              <thead>
+                <tr>
+                  <th>Reference Name</th>
+                  <th>IO Channel</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getAssociatedData().flatMap((item, index) => {
+                  const referenceNames = item.referenceName.split(", ");
+                  const ioChannels = item.IOChannels.split(", ");
 
-            // Ensure both arrays are the same length
-            const maxLength = Math.max(referenceNames.length, ioChannels.length);
-            return Array.from({ length: maxLength }).map((_, i) => (
-              <tr key={`${index}-${i}`}>
-                <td>{referenceNames[i] || ""}</td>
-                <td>{ioChannels[i] || ""}</td>
-              </tr>
-            ));
-          })}
-        </tbody>
-      </table>
-    ) : (
-      <p>No control modules selected</p>
-    )}
-  </div>
-)}
+                  const maxLength = Math.max(
+                    referenceNames.length,
+                    ioChannels.length
+                  );
+                  return Array.from({ length: maxLength }).map((_, i) => (
+                    <tr key={`${index}-${i}`}>
+                      <td>{referenceNames[i] || ""}</td>
+                      <td>{ioChannels[i] || ""}</td>
+                    </tr>
+                  ));
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p>No control modules selected</p>
+          )}
+        </div>
+      )}
 
+      {activeStep === 4 && (
+        <div className="loopdetection-container">
+          <h2>Loop detected Between below TPS Points</h2>
+          <div className="loopsdetection-table-container">
+            {tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <tbody>
+                  {tpsSelected.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.controllerName || item}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+          <h2>
+            Points listed above are refered in P2P connections under below
+            Control Modules
+          </h2>
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <tbody>
+                  {cutoverSelected.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+          <h2>TPS Points P2P References</h2>
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <thead>
+                  <tr>
+                    <td>Before Cutover Reference</td>
+                    <td>After Cutover Reference</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>{`${tpsSelected[index]}.PV` || "-"}</td>
+                      <td>
+                        {tpsSelected[index] && cutoverSelected[index]
+                          ? cutoverSelected[index] + tpsSelected[index] + ".PV"
+                          : "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeStep === 5 && (
+        <div className="loopdetection-container">
+          <h2>Inactivation and Deletion Status</h2>
+
+          <h4>
+            Note: Below TPS Points will be inactivated and deleted from Native
+            Window and Control Builder
+          </h4>
+
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <thead>
+                  <tr>
+                    <td>TPS Points</td>
+                    <td>Inactivation & Deletion</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>{`${tpsSelected[index]}` || "-"}</td>
+                      <td>Completed</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+
+          <h4>
+            Note: Below CM contain TPS Point references and will be inactivated
+            and Deleted from Control Builder Monitoring
+          </h4>
+
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <thead>
+                  <tr>
+                    <td>Peer References</td>
+                    <td>Inactivation Status</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>
+                        {tpsSelected[index] && cutoverSelected[index]
+                          ? cutoverSelected[index]
+                          : "-"}
+                      </td>
+                      <td>Completed</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+        </div>
+      )}
+      {activeStep === 6 && (
+        <div className="loopdetection-container">
+          <h2>Load and Activation Status</h2>
+
+          <h4>
+            Note: Below control strategies represents control module that
+            contains experion point loops
+          </h4>
+
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <thead>
+                  <tr>
+                    <td>TPS Points</td>
+                    <td>Inactivation & Deletion</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>{`${tpsSelected[index]}` || "-"}</td>
+                      <td>Completed</td>
+                    </tr>
+                  ))} */}
+                  <tr>
+                    <td>CNTRL_DEVIDX115</td>
+                    <td>Completed</td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+
+          <h4>
+            Note: Below control strategies represent peer referenced control
+            module{" "}
+          </h4>
+
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <thead>
+                  <tr>
+                    <td>Peer References</td>
+                    <td>Inactivation Status</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>
+                        {tpsSelected[index] && cutoverSelected[index]
+                          ? cutoverSelected[index]
+                          : "-"}
+                      </td>
+                      <td>Completed</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeStep === 7 && (
+        <div className="loopdetection-container">
+          <h2>TPS Loop</h2>
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <tbody>
+                  {Array.from({
+                    length: Math.max(
+                      cutoverSelected.length,
+                      tpsSelected.length
+                    ),
+                  }).map((_, index) => (
+                    <tr key={index}>
+                      <td>{`${tpsSelected[index]}` || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+          <h2>Experion Loop</h2>
+          <div className="loopsdetection-table-container">
+            {cutoverSelected.length > 0 && tpsSelected.length > 0 ? (
+              <table className="loopsdetection-table">
+                <tr>
+                  <td>CNTRL_DEVIDX115</td>
+                  <td>Completed</td>
+                </tr>
+              </table>
+            ) : (
+              <p>No loops selected</p>
+            )}
+          </div>
+          <h2>Status</h2>
+          <h4>TPS Loop to Experion Loop Cutover Completed Successfully.</h4>
+        </div>
+      )}
       <div className="button-container">
         <button
           className="back-button"
