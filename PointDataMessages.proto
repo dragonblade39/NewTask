@@ -1,0 +1,706 @@
+//////////////////////////////////////////////////////////////////////////
+////     COPYRIGHT 2019-2025         HONEYWELL INTERNATIONAL SARL     ////
+//////////////////////////////////////////////////////////////////////////
+//
+//  PointDataMessages.proto: definition of point data related messages
+//
+//////////////////////////////////////////////////////////////////////////
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "hsctypes.proto";
+import "usermessages.proto";
+
+package hsc;
+
+// Item Constants
+enum ItemsFlags
+{
+    ITEMFLAG_UNDEFINED              = 0;                // [proto3 requires the first enum to be 0]
+
+    // subscription options
+    ITEMFLAG_SUB_MASK               = 0x0000000f;       // subscription mask
+    ITEMFLAG_SUB_DYNAMICSCAN        = 0x00000001;       // [sub] set for dynamic scan data
+    ITEMFLAG_SUB_ONESHOT            = 0x00000002;       // [sub] set for oneshot data
+    ITEMFLAG_SUB_ONESHOTAGAIN       = 0x00000004;       // [sub] set for on-demand re-request of oneshot data (eg scripted button that request for one shot data multiple times after callup)
+
+    // include options
+    ITEMFLAG_INC_MASK               = 0x0000ff00;       // includes mask
+    ITEMFLAG_INC_RANGE              = 0x00000100;       // [read|sub] include the range
+    ITEMFLAG_INC_UNITS              = 0x00000200;       // [read|sub] include the units
+    ITEMFLAG_INC_ALARMSTATE         = 0x00000400;       // [read|sub] include the alarm state
+    ITEMFLAG_INC_POINTNOTIFSTATE    = 0x00000800;       // [read|sub] include the point notif state
+    ITEMFLAG_INC_PVFORMAT           = 0x00001000;       // [read/sub] include the pv format
+
+    // general options
+    ITEMFLAG_OPT_MASK               = 0x000f0000;       // options mask
+    ITEMFLAG_USE_SECURITYLEVEL      = 0x00080000;       // [read|sub] apply the security level field (if not set, SECLVL_STN_OPER will be used)
+    ITEMFLAG_OPT_DISPLAYELEMENTNAME = 0x00010000;       // [read|sub] treat item parameter name as a display element binding name
+}
+
+enum ItemAttributes
+{
+    ITEMATTR_VALUE                  = 0;            // [read|sub] value           of the resulting point.param
+    ITEMATTR_RANGELO                = 1;            // [read|sub] lo range        of the resulting point.param
+    ITEMATTR_RANGEHI                = 2;            // [read|sub] hi range        of the resulting point.param
+    ITEMATTR_UNITS                  = 3;            // [read|sub] units           of the resulting point.param
+    ITEMATTR_ALARMSTATE             = 4;            // [read|sub] alarmstate      of the resulting point.param
+    ITEMATTR_POINTNOTIFSTATE        = 5;            // [read|sub] pointnotifstate of the resulting point.param
+    ITEMATTR_PVFORMAT               = 6;            // [read|sub] pvformat        of the resulting point.param
+}
+
+enum SecurityLevel
+{
+    SECLVL_STN_LVL1                 = 0;            // [read|sub] inhibit alarm ack and data entry  [default]
+    SECLVL_STN_LVL2                 = 1;            // [read|sub] inhibit data entry
+    SECLVL_STN_OPER                 = 2;            // [read|sub] operator level   (dfd level 0)
+    SECLVL_STN_SUPR                 = 3;            // [read|sub] supervisor level (dfd level 1)
+    SECLVL_STN_ENGR                 = 4;            // [read|sub] engineer level   (dfd level 2)
+    SECLVL_STN_MNGR                 = 5;            // [read|sub] manager level    (dfd level 3)
+}
+
+message PointParameters
+{
+    string          point_name      = 1;            // [must] [all] point name
+    string          parameter_name  = 2;            // [must] [all] parameter name
+
+    uint32          item_flags      = 3;            // [optional] [read|sub] flags for subscription behaviour and to indicate which additional properties should be included
+    ItemAttributes  item_attrs      = 4;            // [optional] [read|sub] indicates which attribute of the point parameter item should be fetched as the primary value
+    string          item_id         = 5;            // [optional] [sub] item identifier for the parameter
+    int32           item_period     = 6;            // [optional] [sub] item subscription period (milliseconds)
+    bool            delete_item     = 7;            // [optional] [sub|modify] each item is assumed to be an 'add' unless this field is true
+    SecurityLevel   security_level  = 8;            // [optional] [read|sub] security level (refer flag ITEMFLAG_USE_SECURITYLEVEL for details)
+}
+
+message OPCQuality
+{
+    uint32 raw_data = 1;    // station/IPS quality
+}
+
+message EnumValuesRequest
+{
+    repeated PointParameters point_params = 1;
+}
+
+message EnumValuesResponse
+{
+    repeated EnumValueSet enums = 1;
+}
+
+message EnumValueSet
+{
+    PointParameters     point_param = 1;
+    repeated EnumValue  values      = 2;
+    ErrorState          status      = 3;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// PointData messages
+
+// History messages
+enum HistorySampleMode
+{
+    SAMPLE_MODE_SNAPSHOT = 0;
+    SAMPLE_MODE_AVERAGE  = 1;
+}
+
+enum HistoryBinningFunction
+{
+    BINNING_FUNCTION_RAW = 0;   // returns the raw data (snapshot or average) without binning [default]
+    BINNING_FUNCTION_AVG = 1;   // returns the average of the data within the binning_interval
+    BINNING_FUNCTION_MIN = 2;   // returns the minimum of the data within the binning_interval
+    BINNING_FUNCTION_MAX = 3;   // returns the maximum of the data within the binning_interval
+}
+
+message PointHistoryRequest
+{
+    int32                       start_datetime      = 1;    // [app only | deprecated] use sample_size instead
+    int32                       end_datetime        = 2;    // supply the end date for the sample range or zero for now
+    int32                       interval            = 3;    // sample interval expressed in milliseconds
+    repeated PointParameters    point_params        = 4;
+    HistorySampleMode           sample_mode         = 5;    // sample mode (snapshot or average)
+    int32                       sample_size         = 6;    // sample size (number of samples requested)
+    int32                       timeout             = 7;    // maximum time to wait for a response (in milliseconds)
+    int32                       offset              = 8;    // offset for history values in seconds
+    HistoryBinningFunction      binning_function    = 9;    // desired binning function
+    int32                       binning_interval    = 10;   // size of each bin in milliseconds
+}
+
+message PointHistoryResponse
+{
+    HistoryTimes                times               = 1;
+    repeated HistoryValues      values              = 2;
+}
+
+message SubscribeHistoryRequest
+{
+    SubscribeFunction           function            = 1;    // [must] specify which subscribe function is to be performed
+    fixed64                     subscribe_id        = 2;    // [optional:sub] [must:others] specify the subscribe identifier if known to apply the function to
+    PointHistoryRequest         history_request     = 3;
+}
+
+message SubscribeHistoryResponse
+{
+    fixed64                     subscribe_id        = 1;
+    SubscribeFunction           function            = 2;
+    SubscribeStatus             status              = 3;
+    PointHistoryResponse        history_response    = 4;
+}
+
+message HistoryTimes
+{
+    repeated int32              time                = 1;
+    repeated int32              bias                = 2;
+}
+
+message HistoryValues
+{
+    repeated PointRawValue      value               = 1;
+    PointValueType              value_type          = 2;
+    repeated OPCQuality         quality             = 3;
+    repeated HistoryMetadata    metadata            = 4;
+    ErrorState                  status              = 5;
+}
+
+message HistoryMetadata
+{
+    int64 raw_data = 1;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Raw history times messages
+message PointHistoryRawTimesRequest
+{
+    PointParameters             point_param         = 1;
+    uint32                      window_size         = 2;    // Number of samples to be returned
+    uint32                      sample_offset       = 3;    // Shift the window by this many samples forward in time, relative to the reference time.
+                                                            //   sample offset must be in the range [0, window_size)
+    TimeValue                   reference_time      = 4;    // Samples occurring prior to this time will returned (inclusively)
+                                                            //   if plain time is used, the server will interpret the time in server time 
+}
+
+message ValueListResponse
+{
+    HSCStatus                  status              = 1;
+    repeated PointRawValue     values              = 2;     // Values in the order they should be displayed
+    bool                       more_before         = 3;     // True if there are values before the window
+    bool                       more_after          = 4;     // True if there are values after the window
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Write point history messages
+message WritePointHistoryRequest
+{
+    PointParameters point_param         = 1;
+    PointValueType  value_type          = 2;
+    oneof data
+    {
+        WriteHistoryValueList values    = 3;
+        WriteHistoryInterval interval   = 4;
+    }
+}
+message WriteHistoryValueList
+{
+    repeated WriteHistoryValue values = 1; // Note: If no historical values occur after the last value, the current value will be updated.
+}
+message WriteHistoryValue
+{
+    PointRawValue  raw_value            = 1;    // [must]
+    OPCQuality     quality              = 2;    // [optional]
+    TimeWithBias   timestamp            = 3;    // [must]
+}
+message WriteHistoryInterval
+{
+    PointRawValue  raw_value            = 1;    // [must]
+    OPCQuality     quality              = 2;    // [optional]
+    TimeWithBias   start_datetime       = 3;    // [must] The first time at which the value will be changed.
+    TimeWithBias   end_datetime         = 4;    // [must] End time not inclusive.
+                                                // Note: If no historical values occur after the specified interval, the current value will not be updated.
+}
+message WritePointHistoryResponse
+{
+    HSCStatus          status           = 1;
+}
+//////////////////////////////////////////////////////////////////////////
+// Assetmodel messages
+
+message AssetModel
+{
+    Asset lists = 1;
+    Asset assets = 2;
+}
+
+message Asset
+{
+    string name = 1;
+    string description = 2;
+    repeated Asset children = 3;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// ReadPointData messages
+
+message ReadPointRequest
+{
+    repeated PointParameters point_params = 1;
+}
+
+message ReadPointResponse
+{
+    repeated PointValue value = 1;
+}
+
+// PointValue Field constants - identifies which fields contain real data
+enum PointValueFields
+{
+    FIELD_NONE              = 0;                // PointValue message has no additional fields
+    FIELD_VALUE             = 0x0001;           // PointValue message has field: value
+    FIELD_TYPE              = 0x0002;           // PointValue message has field: type
+    FIELD_STATUS            = 0x0004;           // PointValue message has field: status
+    FIELD_QUALITY           = 0x0008;           // PointValue message has field: quality
+    FIELD_ITEM_ID           = 0x0010;           // PointValue message has field: item_id
+    FIELD_UNITS             = 0x0020;           // PointValue message has field: units
+    FIELD_RANGE_LO          = 0x0040;           // PointValue message has field: range_lo
+    FIELD_RANGE_HI          = 0x0080;           // PointValue message has field: range_hi
+    FIELD_ALARM_STATE       = 0x0100;           // PointValue message has field: alarm_state
+    FIELD_ARRAY             = 0x0200;           // PointValue message has field: array. Either FIELD_VALUE or FIELD_ARRAY should be set at any time, with FIELD_VALUE taking precedence
+    FIELD_PVFORMAT          = 0x0400;           // PointValue message has field: pvformat
+    FIELD_POINT_NOTIF_STATE = 0x0800;           // PointValue message has field: point_notif_state
+}
+
+message PointValue
+{
+    PointRawValue       value               = 1;
+    PointValueType      type                = 2;
+    ErrorState          status              = 3;
+    OPCQuality          quality             = 4;
+
+    uint32              fields              = 5;    // indicates which fields are present in the message (refer PointValueFields enumeration for values)
+
+    string              item_id             = 6;    // [must:sub]
+    string              units               = 7;    // [optional:read|sub] populated when flag ITEMFLAG_INC_UNITS is set
+    double              range_lo            = 8;    // [optional:read|sub] populated when flag ITEMFLAG_INC_RANGE is set
+    double              range_hi            = 9;    // [optional:read|sub] populated when flag ITEMFLAG_INC_RANGE is set
+    fixed32             alarm_state         = 10;   // [optional:read|sub] populated when flag ITEMFLAG_INC_ALARMSTATE is set
+    repeated PointRawValue array            = 11;   // populated when PointValue has array data, in which case the 'value' field is invalid
+    PointNotifState     point_notif_state   = 12;   // [optional:read|sub] populated when flag ITEMFLAG_INC_POINTNOTIFSTATE is set
+    uint32              pvformat            = 13;   // [optional:read|sub] populated when flag ITEMFLAG_INC_PVFORMAT is set
+}
+
+//////////////////////////////////////////////////////////////////////////
+// WritePointData messages
+
+message WritePointRequest // Deprecated. Retaining the same name to allow extraction from Any fields
+{
+    PointParameters point_param = 1;
+    PointRawValue raw_value = 2;
+    PointValueType write_type = 3;
+
+    oneof data
+    {
+        ControlConfirmRequestData control_confirm = 4;
+    }
+}
+
+message WritePointResponse // Deprecated. Retaining the same name to allow extraction from Any fields
+{
+    ErrorState status = 1;
+
+    oneof data
+    {
+        ControlConfirmResponseData control_confirm = 2;
+    }
+}
+
+message WritePointDataRequest
+{
+    PointParameters point_param = 1;
+    PointRawValue raw_value = 2;
+    PointValueType write_type = 3;
+}
+
+message WritePointDataResponse
+{
+    HSCStatus status = 1;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// GetParamList messages
+
+message ParamListRequest
+{
+    string point                = 1;        // point name to get the list of parameters
+    bool   sort_params          = 2;        // if true, sort the params list
+    bool   identify_key_params  = 3;        // if true, identify key parameters from the full list
+}
+
+message ParamListResponse
+{
+    ErrorState      status      = 1;
+    repeated string params      = 2;        // full list of parameters for this point (only sorted if requested)
+    repeated string key_params  = 3;        // key parameters from the full list if requested
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Search messages
+
+message SearchRequest
+{
+    uint32                      search_context      = 1;    // 0 on first call, use returned search_context for subsequent calls
+    string                      search_term         = 2;    // search term including common wildcards
+    uint32                      search_step         = 3;    // 0 on first call, increment for each subsequent call (ie as user types in search term)
+
+    bool                        group_by_asset      = 10;   // organise results by asset
+
+    uint32                      window_offset       = 20;   // report results window has offset
+    uint32                      window_size         = 21;   // report results window has size
+}
+
+enum MatchField
+{
+    NO_MATCH            = 0;
+    MATCH_NAME          = 1;
+    MATCH_ITEMNAME      = 2;
+    MATCH_DESCRIPTION   = 3;
+}
+
+message MatchInfo
+{
+    MatchField                  field               = 1;    // indicates which field was matched
+    uint32                      begin               = 2;    // indicates the position (0 based index) where the match begins
+    uint32                      end                 = 3;    // indicates the position (0 based index) one past where the match ends
+}
+
+message SearchResult
+{
+    string                      name                = 1;    // point name  [40 char]
+    string                      itemname            = 2;    // item name   [40 char]    (also known as entity name)
+    string                      description         = 3;    // description [132 char]
+    string                      asset               = 4;    // asset name  [255 char]   (full asset name)
+    string                      owner               = 5;    // owner name  [40 char]    (when linking to a point detail use 'owner:name' to call up the point)
+    string                      typelabel           = 6;    // type label  [255]        (equipment type label, etc)
+    bool                        remote_owner        = 7;    // remote owner             (display the owner name when remote_owner and duplicate_name are both true)
+    bool                        duplicate_name      = 8;    // duplicate name           (display the owner name when remote_owner and duplicate_name are both true)
+
+    repeated MatchInfo          matches             = 10;
+}
+
+message AssetSearchResults
+{
+    string                      asset_name          = 1;
+    string                      asset_fullname      = 2;
+    bool                        duplicate_name      = 3;    // indicates at least one other asset has the same asset_name, use asset_fullname to avoid confusion
+
+    uint32                      point_count         = 10;
+    repeated SearchResult       points              = 11;
+
+    uint32                      equipment_count     = 20;
+    repeated SearchResult       equipment           = 21;
+
+    uint32                      list_count          = 30;
+    repeated SearchResult       lists               = 31;
+}
+
+message CategoryInfo
+{
+    bool                        show_name           = 1;
+    bool                        show_itemname       = 2;
+    bool                        show_description    = 3;
+
+    bool                        show_assetname      = 15;
+    bool                        show_typelabel      = 16;
+}
+
+message SearchResponse
+{
+    SearchRequest               search_request      = 1;    // original search request with search_context field updated if required
+
+    uint32                      total_duration      = 2;    // total duration in milliseconds
+    uint32                      search_duration     = 3;    // search duration in milliseconds
+    uint32                      groupby_duration    = 4;    // group by asset duration in milliseconds
+    uint32                      getresponse_duration= 5;    // get response duration in milliseconds
+
+    SearchResult                exact               = 8;    // search result if an exact match is found
+
+    uint32                      asset_count         = 10;   // total asset count with one or more matching points (or equipment)
+    repeated AssetSearchResults assets              = 11;   // search results grouped by asset [SearchRequest must set group_by_asset = true]
+
+    uint32                      point_count         = 20;   // total matching point count
+    repeated SearchResult       points              = 21;   // search results for points
+    CategoryInfo                points_info         = 22;   // category info for points
+
+    uint32                      equipment_count     = 30;   // total matching equipment count
+    repeated SearchResult       equipment           = 31;   // search results for equipment
+    CategoryInfo                equipment_info      = 32;   // category info for equipment
+
+    uint32                      list_count          = 40;   // total matching list count
+    repeated SearchResult       lists               = 41;   // search results for lists
+    CategoryInfo                lists_info          = 42;   // category info for lists
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Subscribe messagess
+
+message SubscribeRequest
+{
+    SubscribeFunction           function        = 1;    // [must] specify which subscribe function is to be performed
+    fixed64                     list_id         = 2;    // [optional:sub] [must:others] specify the list identifier if known to apply the function to
+    int32                       list_period     = 3;    // [must:sub|modify] [optional:others] specify the default subscription period (milliseconds) for the list (may be overridden by item specific periods)
+    uint32                      list_flags      = 4;    // [must:sub|modify] [optional:others] specify the default subscription flags for the list (may be overridden by item specific flags)
+    repeated PointParameters    items           = 5;    // [must:sub|modify] specify the list of point parameter items
+}
+
+message SubscribeResponse
+{
+    fixed64                     list_id         = 1;
+    repeated PointValue         item_values     = 2;
+    SubscribeFunction           function        = 3;
+    SubscribeStatus             status          = 4;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Equipment messages
+
+enum EquipmentCategory
+{
+    EQT_CATEGORY_TYPE         = 0;
+    EQT_CATEGORY_NAME         = 1;
+}
+
+message EquipmentDetails
+{
+    string point_name                            = 1;     // Equipment point name
+    repeated string display_element_source_name  = 2;     // List of all display element source names
+    ErrorState status                            = 3;     // Return code
+}
+
+message EquipmentRequest
+{
+    EquipmentCategory    category              = 1;   // specify which equipment category will be used as the search criteria
+
+    string               type                  = 2;   // specify the equipment type to search by (if search category is type)
+    repeated string      names                 = 3;   // specify the list of equipment point names to search by (if search category is name)
+
+    bool                 get_display_elements  = 4;   // specify whether or not to return display element binding names
+}
+
+message EquipmentResponse
+{
+    repeated EquipmentDetails equipment_items  = 1;     // List of all equipment satisfying parameters of request
+}
+//////////////////////////////////////////////////////////////////////////
+// Related Equipment messages
+enum AlarmAggregationDirection
+{
+    ALARM_AGGREGATION_ANY           = 0;
+    ALARM_AGGREGATION_NONE          = 1;
+    ALARM_AGGREGATION_TO_RELATIVE   = 2;
+    ALARM_AGGREGATION_FROM_RELATIVE = 3;
+}
+message RelatedEquipmentRequest
+{
+    string                      equipment_name          = 1;    // [must] Equipment name to get related equipment for.
+    string                      related_equipment_type  = 2;    // [optional, Empty=Any] Equipment type filter.
+    string                      role                    = 3;    // [optional, Empty=Any role] Equipment role filter, from the perspective of equipment_name.
+    AlarmAggregationDirection   alarm_agg_direction     = 4;    // [optional] To filter based on Alarm aggregation direction
+    bool                        direct_relatives_only   = 5;    // [must] To indicate whether to get direct relatives only or to recurse
+}
+message RelatedEquipment
+{
+    string                      equipment_name           = 1;
+    string                      equipment_type           = 2;
+}
+message RelatedEquipmentResponse
+{
+    HSCStatus                   status                   = 1;
+    repeated RelatedEquipment   related_equipment        = 2;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Digest messages (manage)
+//    rpc ManageDigest     (ManageDigestRequest) return (ManageDigestResponse) {}
+
+
+enum DigestContext
+{
+    DIGESTCONTEXT_EPHEMERAL    = 0;    // [digests that are not persisted and exist only while under active subscription, eg, on a custom schematic page]
+    DIGESTCONTEXT_PRIVATE      = 1;    // [digests that are private to an operator or a static station]
+    DIGESTCONTEXT_PUBLIC       = 2;    // [digests that are publicly accessible to any operator or station]
+}
+
+enum DigestType
+{
+    DIGESTTYPE_INVALID         = 0;
+    DIGESTTYPE_WATCHLIST       = 1;
+//    DIGESTTYPE_EQUIPMENTLIST   = 2;
+}
+
+message DigestItem
+{
+    string item = 1;
+}
+
+message DigestConfig
+{
+    string              id      = 1;    // ["default", "<guid>"]
+    string              title   = 2;    // user defined title must be unique
+    repeated DigestItem items   = 3;
+}
+
+message ManageDigestRequest
+{
+    enum Operation
+    {
+        FETCH       = 0;        // fetch entire digest
+        CLEAR       = 1;        // clear entire digest
+        STORE       = 2;        // store entire digest
+        CREATE      = 3;        // create digest
+        DESTROY     = 4;        // destroy digest
+        ADD_ITEMS   = 5;        // add one or more digest items
+        DEL_ITEMS   = 6;        // del one or more digest items
+    }
+
+    Operation       operation   = 1;    // [must]
+    DigestContext   context     = 2;    // [must]
+    DigestType      type        = 3;    // [must]
+    DigestConfig    digest      = 4;    // [must]
+}
+
+message ManageDigestResponse
+{
+    HSCStatus       status      = 1;    // [all]
+    DigestContext   context     = 3;    // [all]
+    DigestType      type        = 4;    // [all]
+    DigestConfig    digest      = 5;    // [all] [fetch:everything] [others:everything but optional to use]
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Digest messages (subscription)
+
+enum DetailLevel
+{
+    DETAILLEVEL_NANO        = 0;
+    DETAILLEVEL_MINI        = 1;
+    DETAILLEVEL_SMALL       = 2;
+    DETAILLEVEL_MEDIUM      = 3;
+    DETAILLEVEL_LARGE       = 4;
+    DETAILLEVEL_FACEPLATE   = 5;
+}
+
+message DigestSubscribeRequest
+{
+    SubscribeFunction   function        = 1;    // [must] specify which subscribe function is to be performed
+    fixed64             subscribe_id    = 2;    // [optional:sub] [must:others] specify the subscribe identifier if known to apply the function to
+    int32               period          = 3;    // [must:sub|modify] [optional:others] specify the subscription period (milliseconds) for the digest
+    uint32              flags           = 4;    // [must:sub|modify] [optional:others] specify the subscription flags for the digest
+    DigestContext       context         = 5;    // [must] specify the digest context to subscribe
+    DigestType          type            = 6;    // [must] specify the digest type to subscribe
+    DetailLevel         detail_level    = 7;    // [must] specify the digest detail level required
+    DigestConfig        digest          = 8;    // [optional:private|public:specify id if required]
+                                                // [must:ephemeral:specify title and items]
+}
+
+message DigestSubscribeResponse
+{
+    fixed64             subscribe_id    = 1;
+    SubscribeFunction   function        = 2;
+    SubscribeStatus     status          = 3;
+    DigestViewBinder    view_binder     = 4;
+}
+
+message ValueBinding
+{
+    PointValueType      data_type   = 1;
+    PointRawValue       data_value  = 2;
+}
+
+message ParamBinding
+{
+    string              point_name  = 1;
+    string              param_name  = 2;
+    uint32              item_flags  = 3;
+    ItemAttributes      item_attrs  = 4;
+}
+
+message HistoryBinding
+{
+    string              point_name  = 1;
+    string              param_name  = 2;
+    int32               interval    = 3;    // sample interval expressed in milliseconds
+    HistorySampleMode   sample_mode = 4;    // sample mode (snapshot or average)
+    int32               sample_size = 5;    // sample size (number of samples requested)
+}
+
+message PropertyBinding
+{
+    string              id          = 1;    // custom property id
+    oneof binding
+    {
+        ValueBinding    value       = 2;
+        ParamBinding    param       = 3;
+        HistoryBinding  history     = 4;
+    }
+}
+
+message DigestViewItem
+{
+    string                          item            = 1;    // digest item (point.parameter name)
+    string                          view_def_name   = 2;    // view definition name
+    map<string, PropertyBinding>    bindings        = 3;    // map of custom property bindings
+    string                          message         = 4;    // any information or status messages that could add detail if something doesn't work for an item
+}
+
+message DigestViewBinder
+{
+    DigestType              type            = 1;    // digest type
+    DetailLevel             detail_level    = 2;    // digest detail level
+    string                  id              = 3;    // digest id
+    string                  title           = 4;    // digest title
+    repeated DigestViewItem view_items      = 5;    // digest view items
+    map<string, string>     view_defs       = 6;    // map of 'view definition name' to 'view definition json' string
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Structured Query messages
+message StructuredQueryRequest
+{
+    string                          query           = 1;
+    map<string,PointRawValue>       parameters      = 2;    // Named parameters and their values
+}
+
+message QueryTableCell
+{
+    PointRawValue                   value           = 1;
+    PointValueType                  type            = 2;
+    //uint32                          quality         = 3;
+    // Initial approach is to have quality as a column value, but it could evolve to a per cell or per row concept
+    // E.g. Could change to a repeated tuple in TableRow indicating which cell had non-good quality
+}
+
+message QueryTableRow
+{
+    repeated QueryTableCell         cells          = 1;
+}
+
+message QueryTable
+{
+    repeated string                 column_headers = 1;
+    repeated QueryTableRow          rows           = 2;
+}
+
+message StructuredQueryResponse
+{
+    HSCStatus                       status         = 1;
+    QueryTable                      data           = 2;
+}
+
+//////////////////////////////////////////////////////////////////////////
+////     COPYRIGHT 2019-2025         HONEYWELL INTERNATIONAL SARL     ////
+//////////////////////////////////////////////////////////////////////////
